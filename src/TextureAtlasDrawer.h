@@ -10,6 +10,7 @@
 #define __BaseApp__TextureAtlasDrawer__
 	
 #include "ofMain.h"
+#include "ofxTimeMeasurements.h"
 
 class TextureAtlas;
 class TextureAtlasCreator;
@@ -42,7 +43,7 @@ public:
 	void beginBatchDraw();
 
 	void drawTextureInBatch(const std::string& filePath, const ofRectangle& where);
-	void drawTextureInBatch(const std::string& filePath, const TexQuad& quad);
+	void drawTextureInBatch(const std::string& filePath, const TexQuad& quad, int _id);
 	void drawTextureInBatch(const std::string& filePath, const TexQuad& quad, const ofColor& c);
 
 	int endBatchDraw(bool debug = false); //returns the # of tiles drawn

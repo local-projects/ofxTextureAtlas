@@ -194,19 +194,30 @@ void TextureAtlasCreator::update(ofEventArgs&){
 			}else{
 
 				string file = fileList[currentFile];
-				bool didFit = currentAtlas->addTexture(file, maxItemSideSize);
-				if(!didFit){
-					if(makeMipMaps){
-						currentAtlas->generateMipMap();
-						currentAtlas->setMipMapBias(mipmapBias);
-					}
-					currentAtlas = new TextureAtlas();
-					currentAtlas->setup(fboSize, padding, internalFormat );
-					atlases.push_back(currentAtlas);
-					currentFile--;
-					ofLogNotice("TextureAtlasCreator") << "Creating a new TextureAtlas (" << atlases.size() << ")";
-				}
-				currentFile++;
+                
+                //Check to make sure file exit before adding it to the texture
+                if(ofFile::doesFileExist(file))
+                {
+                    bool didFit = currentAtlas->addTexture(file, maxItemSideSize);
+                    
+                    if(!didFit){
+                        if(makeMipMaps){
+                            currentAtlas->generateMipMap();
+                            currentAtlas->setMipMapBias(mipmapBias);
+                        }
+                        currentAtlas = new TextureAtlas();
+                        currentAtlas->setup(fboSize, padding, internalFormat );
+                        atlases.push_back(currentAtlas);
+                        currentFile--;
+                        ofLogNotice("TextureAtlasCreator") << "Creating a new TextureAtlas (" << atlases.size() << ")";
+                    }
+                    currentFile++;
+                }
+                else
+                {
+                    ofLogError("TextureAtlasCreator::update") << file << " does not exist";
+                }
+				
 			}
 			c++;
 		}

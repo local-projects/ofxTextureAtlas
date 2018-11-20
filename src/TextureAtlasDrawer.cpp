@@ -194,7 +194,7 @@ int TextureAtlasDrawer::endBatchDraw(bool debug){
 			c += it->second.getVertices().size()/4;
 			it->first->getFbo().getTexture().unbind();
 		}else{
-			ofLogError("TextureAtlasDrawer") << "NULL Atlas?";
+			//ofLogError("TextureAtlasDrawer") << "NULL Atlas?";
 		}
 		++it;
 	}
@@ -220,7 +220,7 @@ void TextureAtlasDrawer::drawTextureInBatch(const string& filePath, const ofRect
 
 
 
-void TextureAtlasDrawer::drawTextureInBatch(const string& filePath, const TexQuad& quad){
+void TextureAtlasDrawer::drawTextureInBatch(const string& filePath, const TexQuad& quad, int _id){
 
 	TextureInfo & ti = textures[filePath];
 	TextureAtlas* atlas = ti.atlas;
@@ -233,26 +233,41 @@ void TextureAtlasDrawer::drawTextureInBatch(const string& filePath, const TexQua
 
 	ofMesh & mesh = currentBatch[atlas];
 	addToMesh(mesh, quad, ti.crop);
+    
+    //Uncomment for debugging
+    /*
+    float width = quad.verts.tr.x - quad.verts.tl.x;
+    float height = quad.verts.bl.y - quad.verts.tl.y;
+    ofLogNotice() << "width-id: " << width << "-" << _id;
+    */ 
 }
 
 void TextureAtlasDrawer::drawTextureInBatch(const string& filePath, const TexQuad& quad, const ofColor & col){
 
+    TS_START_ACC("TextureAtlasDrawer drawTextureInBatch");
 	TextureInfo & ti = textures[filePath];
 	TextureAtlas* atlas = ti.atlas;
 
 	map<TextureAtlas*, ofMesh>::iterator it = currentBatch.find(atlas);
 	if(it == currentBatch.end()){
+        //TS_START_ACC("TextureAtlasDrawer createNewMesh");
 		currentBatch[atlas] = ofMesh();
 		currentBatch[atlas].setMode(OF_PRIMITIVE_TRIANGLES);
+        //TS_STOP_ACC("TextureAtlasDrawer createNewMesh");
 	}
 
+    TS_START_ACC("TextureAtlasDrawer addToMesh");
 	ofMesh & mesh = currentBatch[atlas];
 	addToMesh(mesh, quad, ti.crop);
-
+    
+    
 	mesh.addColor(col);
 	mesh.addColor(col);
 	mesh.addColor(col);
 	mesh.addColor(col);
+    TS_STOP_ACC("TextureAtlasDrawer addToMesh");
+    
+    TS_STOP_ACC("TextureAtlasDrawer drawTextureInBatch");
 }
 
 
